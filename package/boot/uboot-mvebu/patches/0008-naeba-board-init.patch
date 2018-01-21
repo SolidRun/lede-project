@@ -152,7 +152,7 @@ diff -Nru u-boot-2017.03.orig/board/solidrun/naeba/naeba.c u-boot-2017.03/board/
 +	/* De-assert pcie,switch,phy resets */
 +	mdelay(100);
 +	setbits_le32(MVEBU_GPIO1_BASE + 0x0, BIT(1) | BIT(3) | BIT(12));
-+	setbits_le32(MVEBU_GPIO0_BASE + 0x0, BIT(19) | BIT(22) | BIT(23));
++	setbits_le32(MVEBU_GPIO0_BASE + 0x0, BIT(19) | BIT(23));
 +	mdelay(10);
 +
 +	return 0;
