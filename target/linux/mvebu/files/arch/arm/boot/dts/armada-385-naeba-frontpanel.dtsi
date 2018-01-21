@@ -179,4 +179,14 @@
 		compatible = "lm75";
 		reg = <0x4e>;
 	};
+	/* 2Kb eeprom on front panel */
+	eeprom@51 {
+		compatible = "atmel,24c02";
+		reg = <0x51>;
+	};
+	/* 2Kb eeprom on front panel */
+	eeprom@52 {
+		compatible = "atmel,24c02";
+		reg = <0x52>;
+	};
 };
