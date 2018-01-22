@@ -1,0 +1,20 @@
+--- a/arch/arm/boot/dts/armada-385-naeba-frontpanel.dtsi
++++ b/arch/arm/boot/dts/armada-385-naeba-frontpanel.dtsi
+@@ -174,4 +174,17 @@
+ 			led-max-microamp = <5000>;
+ 		};
+ 	};
++	/* Temp Sensors on main board */
++	T1: nct75@4c {
++		compatible = "tmp75c";
++		reg = <0x4c>;
++	};
++	T2: nct75@4d {
++		compatible = "tmp75c";
++		reg = <0x4d>;
++	};
++	T3: nct75@4e {
++		compatible = "tmp75c";
++		reg = <0x4e>;
++	};
+ };
