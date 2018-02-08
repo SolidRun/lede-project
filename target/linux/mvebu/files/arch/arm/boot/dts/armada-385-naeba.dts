@@ -169,14 +169,12 @@
 			};
 
 			i2c@11000 { /* ROM, temp sensor and front panel */
-				clock-frequency = <400000>;
 				pinctrl-0 = <&i2c0_pins>;
 				pinctrl-names = "default";
 				status = "okay";
 			};
 
 			i2c@11100 { /* SFP */
-				clock-frequency = <100000>;
 				pinctrl-0 = <&naeba_i2c1_pins>;
 				pinctrl-names = "default";
 				status = "okay";
