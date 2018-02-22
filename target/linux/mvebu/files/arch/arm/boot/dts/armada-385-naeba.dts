@@ -256,11 +256,11 @@
 			 * the mini-PCIe connectors on the board.
 			 */
 			pcie@2,0 {
-				reset-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
+				reset-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
 				status = "okay";
 			};
 			pcie@3,0 {
-				reset-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
+				reset-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
 				status = "okay";
 			};
 		};
@@ -272,7 +272,7 @@
 		los-gpio = <&gpio1 22 GPIO_ACTIVE_HIGH>;
 		moddef0-gpio = <&gpio0 25 GPIO_ACTIVE_LOW>;
 		sfp,ethernet = <&eth2>;
-		tx-disable-gpio = <&gpio1 12 GPIO_ACTIVE_HIGH>;
+		tx-disable-gpio = <&gpio1 14 GPIO_ACTIVE_HIGH>;
 		tx-fault-gpio = <&gpio0 24 GPIO_ACTIVE_HIGH>;
 	};
 
