@@ -59,11 +59,11 @@ diff -Nru u-boot-2017.03.orig/board/solidrun/naeba/naeba.c u-boot-2017.03/board/
 +
 +DECLARE_GLOBAL_DATA_PTR;
 +
-+#define BOARD_GPP_OUT_ENA_LOW	0xff37ffff
-+#define BOARD_GPP_OUT_ENA_MID	0xfffebfdd
++#define BOARD_GPP_OUT_ENA_LOW	0x3f37ffff
++#define BOARD_GPP_OUT_ENA_MID	0xfffe2fda
 +
-+#define BOARD_GPP_OUT_VAL_LOW	0x0
-+#define BOARD_GPP_OUT_VAL_MID	0x0
++#define BOARD_GPP_OUT_VAL_LOW	0xc0000000
++#define BOARD_GPP_OUT_VAL_MID	0x00009004
 +#define BOARD_GPP_POL_LOW	0x0
 +#define BOARD_GPP_POL_MID	0x0
 +
