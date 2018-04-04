@@ -33,6 +33,11 @@ define Build/boot-scr-cfbase
 	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -d cfbase-boot.script $@.bootscript
 endef
 
+define Build/boot-scr-naeba
+	rm -f $@.bootscript
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -d naeba-boot.script $@.bootscript
+endef
+
 define Build/boot-img
 	rm -f $@.boot
 	mkfs.fat -C $@.boot 16384
@@ -41,12 +46,57 @@ define Build/boot-img
 	mcopy -i $@.boot $@.bootscript ::boot.scr
 endef
 
+define Build/partition1
+	rm -f $@.partition1
+	rm -f $@.partition1.cmd_file
+	touch $@.partition1.cmd_file
+	NUM_OF_PART1_BLOCKS=$$(( $(CONFIG_TARGET_ROOTFS_PARTSIZE) * 512)); \
+	mkfs.ext4 $@.partition1 -b 4096 $$NUM_OF_PART1_BLOCKS
+	$(foreach dts,$(DEVICE_DTS), echo "write $(DTS_DIR)/$(dts).dtb $(dts).dtb" >> $@.partition1.cmd_file;)
+	echo "write $(KDIR)/$(KERNEL_INITRAMFS_NAME) zImage" >> $@.partition1.cmd_file
+	echo "write $@.bootscript boot.scr" >> $@.partition1.cmd_file
+	echo "mkdir rootfs" >> $@.partition1.cmd_file
+	echo "cd rootfs" >> $@.partition1.cmd_file
+	echo "write $(IMAGE_ROOTFS) rootfs.ext4" >> $@.partition1.cmd_file
+	debugfs -w -f $@.partition1.cmd_file $@.partition1
+endef
+
+define Build/partition2
+	rm -f $@.partition2
+	NUM_OF_BLOCKS=$$(( $(CONFIG_TARGET_ROOTFS_PARTSIZE) * 512 )); \
+	mkfs.ext4 -F $@.partition2  -b 4096 $$NUM_OF_BLOCKS
+endef
+
+define Build/partition3
+	rm -f $@.partition3
+	NUM_OF_BLOCKS=$$(( $(CONFIG_TARGET_ROOTFS_PARTSIZE) * 256 )); \
+	mkfs.ext4 -F $@.partition2  -b 4096 $$NUM_OF_BLOCKS
+endef
+
+define Build/partition4
+	rm -f $@.partition4
+	# This is /etc/ overlay directory
+	mkfs.ext4 -F $@.partition4 -b 4096 8192 # 32MByte in size
+endef
+
 define Build/sdcard-img
 	ROOTFS_SIZE=$$(( $(CONFIG_TARGET_ROOTFS_PARTSIZE) * 1024 * 2 )); \
 	./gen_mvebu_sdcard_img.sh $@ \
 		"$(STAGING_DIR_IMAGE)/clearfog-u-boot-spl.kwb" \
 		c 32768 $@.boot \
 		83 $$ROOTFS_SIZE $(IMAGE_ROOTFS)
+endef
+
+define Build/sdcard-img-naeba
+	PART1_ROOTFS_SIZE=$$(( $(CONFIG_TARGET_ROOTFS_PARTSIZE) * 1024 * 4 ));\
+	PART2_ROOTFS_SIZE=$$(( $(CONFIG_TARGET_ROOTFS_PARTSIZE) * 1024 * 4 ));\
+	ROOTFS_SIZE=$$(( $(CONFIG_TARGET_ROOTFS_PARTSIZE) * 1024 * 2 )); \
+	./gen_mvebu_sdcard_img.sh $@ \
+		"$(STAGING_DIR_IMAGE)/naeba-u-boot-spl.kwb" \
+		83 $$PART1_ROOTFS_SIZE $@.partition1 \
+		83 $$PART2_ROOTFS_SIZE $@.partition2 \
+		83 $$ROOTFS_SIZE $@.partition3 \
+		83 65536 $@.partition4
 endef
 
 define Device/Default
@@ -199,6 +249,22 @@ define Device/armada-388-clearfog-base
   DEVICE_DTS := armada-388-clearfog-pro armada-388-clearfog-base
 endef
 TARGET_DEVICES += armada-388-clearfog-base
+
+define Device/armada-385-naeba
+  KERNEL_INSTALL := 1
+  KERNEL := kernel-bin
+  DEVICE_TITLE := Naeba machine
+  DEVICE_PACKAGES := \
+	  kmod-nls-cp437 kmod-nls-iso8859-1 swconfig \
+	  mkf2fs e2fsprogs kmod-fs-vfat kmod-fuse kmod-fs-f2fs \
+	  kmod-ata-core kmod-ata-ahci kmod-ata-marvell-sata kmod-scsi-core kmod-scsi-generic \
+	  kmod-button-hotplug kmod-gpio-button-hotplug
+  IMAGES := sdcard.img.gz
+  IMAGE/sdcard.img.gz := boot-scr-naeba | partition3 | partition2 | partition1 | partition4 | sdcard-img-naeba | gzip | append-metadata
+  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(2)
+  DEVICE_DTS := armada-388-clearfog-pro armada-388-clearfog-base armada-385-naeba
+endef
+TARGET_DEVICES += armada-385-naeba
 
 define Device/globalscale-mirabox
   $(Device/NAND-512K)
