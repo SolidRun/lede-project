@@ -145,6 +145,8 @@ define Device/globalscale-mirabox
 endef
 TARGET_DEVICES += globalscale-mirabox
 
+ifeq ($(KERNEL_PATCHVER),4.14)
+
 define Device/turris-omnia
   KERNEL_INSTALL := 1
   KERNEL := kernel-bin
@@ -160,5 +162,6 @@ define Device/turris-omnia
   DEVICE_DTS := armada-385-turris-omnia
 endef
 TARGET_DEVICES += turris-omnia
+endif
 
 endif
